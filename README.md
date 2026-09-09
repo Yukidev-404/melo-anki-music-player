@@ -25,6 +25,7 @@ MELO v1.0.2 adds improved library management, persistent player positioning, and
 ### Library management
 
 - Added **REMOVE FOLDER FROM LIBRARY** to the `•••` menu.
+- - Bundled Pixel Operator font — no separate font installation required
 - Select a previously imported folder and remove its tracks from MELO's library in one action.
 - Matching tracks are removed from the library, Favorites, Recent, and Playlists.
 - The actual music files on your computer are **never deleted**.
