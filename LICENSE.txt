@@ -1,0 +1,11 @@
+MELO — Personal Music Player for Anki
+Version 1.0
+Copyright © 2026 Yuki
+
+All rights reserved for the original material in this project authored by Yuki.
+No permission is granted to copy, redistribute, publish, sell, sublicense, or
+create derivative versions of those original materials without prior written
+permission, except as required by applicable law.
+
+Third-party components and assets are excluded from this claim and remain under
+their respective licenses.
