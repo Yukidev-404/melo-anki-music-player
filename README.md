@@ -1,3 +1,11 @@
+<p align="center">
+  <img src="assets/melo-banner.png" alt="MELO — Personal Music Player for Anki">
+</p>
+
+<p align="center">
+  <strong>Personal Music Player for Anki</strong><br>
+  Retro-inspired local music player with playlists, Favorites, DISC mode, visualizer and customizable ambience.
+</p>
 # MELO
 
 ### Personal Music Player for Anki
