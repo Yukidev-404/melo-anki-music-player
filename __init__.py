@@ -424,8 +424,8 @@ class RoundArtwork(QWidget):
         self.setFixedSize(size, size)
         self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, True)
         self.pixmap = None
-        self._texture = QPixmap(str(Path(__file__).with_name("disc_texture_centered.png")))
-        self._arm = QPixmap(str(Path(__file__).with_name("arm_overlay_centered.png")))
+        self._texture = QPixmap(str(Path(__file__).parent / "assets" / "melo_disc_texture_hr.png"))
+        self._arm = QPixmap(str(Path(__file__).parent / "assets" / "melo_tonearm_hr.png"))
         self.angle = 0
         self.playing = False
 
@@ -782,8 +782,8 @@ class WheelSelector(QWidget):
         disc_cx = rect.width() + 105.0
         disc_cy = rect.height() / 2.0 + 2.0
         disc_radius = min(225.0, rect.height() * 0.68)
-        texture_path = Path(__file__).with_name("disc_texture_centered.png")
-        arm_path = Path(__file__).with_name("arm_overlay_centered.png")
+        texture_path = Path(__file__).parent / "assets" / "melo_disc_texture_hr.png"
+        arm_path = Path(__file__).parent / "assets" / "melo_tonearm_hr.png"
         texture = QPixmap(str(texture_path))
         arm_texture = QPixmap(str(arm_path))
         if not texture.isNull():
