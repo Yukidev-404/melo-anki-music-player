@@ -13,6 +13,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QFileDialog,
     QInputDialog,
+    QMessageBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -1202,6 +1203,7 @@ class MELO(QWidget):
         menu = QMenu(self.menu_button)
         self.music_action = menu.addAction("+ MUSIC")
         self.folder_action = menu.addAction("+ FOLDER")
+        self.remove_folder_action = menu.addAction("REMOVE FOLDER FROM LIBRARY")
         menu.addSeparator()
         self.create_playlist_action = menu.addAction("+ PLAYLIST")
         self.add_to_playlist_action = menu.addAction("ADD CURRENT TO PLAYLIST")
@@ -1211,6 +1213,7 @@ class MELO(QWidget):
         self.reset_background_action = menu.addAction("RESET BACKGROUND")
         self.music_action.triggered.connect(self.add_music)
         self.folder_action.triggered.connect(self.add_folder)
+        self.remove_folder_action.triggered.connect(self.remove_folder)
         self.create_playlist_action.triggered.connect(self.create_playlist)
         self.add_to_playlist_action.triggered.connect(self.add_current_to_playlist)
         self.favorite_action.triggered.connect(self.toggle_favorite)
@@ -2115,6 +2118,80 @@ class MELO(QWidget):
         ]
         files.sort(key=str.lower)
         self._append_files(files)
+
+    def remove_folder(self):
+        """Remove library entries located inside a selected folder.
+
+        This only removes the music paths from MELO's library. It never
+        deletes the actual files from the user's disk. It also works for
+        folders imported before this feature was added because it matches
+        the stored track paths directly.
+        """
+        folder = QFileDialog.getExistingDirectory(
+            self,
+            "Remove a music folder from MELO",
+            "",
+        )
+        if not folder:
+            return
+
+        root = Path(folder).resolve()
+        matched = []
+        for track in self.tracks:
+            try:
+                track_path = Path(track).resolve()
+                track_path.relative_to(root)
+            except (OSError, ValueError):
+                continue
+            matched.append(track)
+
+        if not matched:
+            QMessageBox.information(
+                self,
+                "MELO Library",
+                "No music from that folder is currently in your MELO library.",
+            )
+            return
+
+        answer = QMessageBox.question(
+            self,
+            "Remove folder from library?",
+            f"Remove {len(matched)} track(s) from MELO's library?\n\n"
+            "Your actual music files will NOT be deleted.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if answer != QMessageBox.StandardButton.Yes:
+            return
+
+        current_path = None
+        if 0 <= self.current_index < len(self.tracks):
+            current_path = self.tracks[self.current_index]
+
+        remove_set = set(matched)
+        self.tracks = [track for track in self.tracks if track not in remove_set]
+
+        if not self.tracks:
+            self.current_index = -1
+            self.player.stop()
+        elif current_path in remove_set:
+            self.current_index = min(self.current_index, len(self.tracks) - 1)
+            self.load_current(False)
+        elif current_path in self.tracks:
+            self.current_index = self.tracks.index(current_path)
+        else:
+            self.current_index = min(self.current_index, len(self.tracks) - 1)
+
+        # Remove the same paths from MELO's secondary collections so that
+        # Favorites, Recent, and Playlists do not retain dead library entries.
+        self.favorites.difference_update(remove_set)
+        self.recent = [path for path in self.recent if path not in remove_set]
+        for playlist_name, playlist_tracks in list(self.playlists.items()):
+            self.playlists[playlist_name] = [path for path in playlist_tracks if path not in remove_set]
+
+        self.save_state()
+        self.refresh_rows()
+        self._update_favorite_action()
 
     # ---------------- Playback ----------------
 
