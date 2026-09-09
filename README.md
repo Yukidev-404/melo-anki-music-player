@@ -48,13 +48,13 @@ MELO v1.0.2 adds improved library management, persistent player positioning, and
 ### MELO in LIST Mode
 
 <p align="center">
-  <img src="assets/screenshots/melo-list-mode.png" alt="MELO LIST mode" width="900">
+  <img src="assets/melo-list-mode.png" alt="MELO LIST mode" width="900">
 </p>
 
 ### MELO in DISC Mode
 
 <p align="center">
-  <img src="assets/screenshots/melo-disc-mode.png" alt="MELO DISC mode" width="900">
+  <img src="assets/melo-disc-mode.png" alt="MELO DISC mode" width="900">
 </p>
 
 ### MELO inside Anki
