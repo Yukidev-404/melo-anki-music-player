@@ -1084,6 +1084,11 @@ class MELO(QWidget):
         settings = QSettings("MELO", "Explore")
         stored_mode = settings.value("mode", cfg.get("mode", "disc"), type=str)
         self.mode = "list" if stored_mode == "list" else "disc"
+        self._saved_player_x = settings.value("player_x", None, type=int)
+        self._saved_player_y = settings.value("player_y", None, type=int)
+        self._has_saved_player_position = (
+            self._saved_player_x is not None and self._saved_player_y is not None
+        )
 
         self.audio_output = QAudioOutput(self)
         self.player = QMediaPlayer(self)
@@ -1142,6 +1147,13 @@ class MELO(QWidget):
 
         if getattr(self, "user_moved", False):
             self._clamp_to_main_window()
+            return
+
+        # Restore the last manually placed position across Anki restarts.
+        if getattr(self, "_has_saved_player_position", False):
+            self.move(int(self._saved_player_x), int(self._saved_player_y))
+            self._clamp_to_main_window()
+            self.raise_()
             return
 
         # Default placement: right side of Anki, around the user's marked area.
@@ -1762,10 +1774,30 @@ class MELO(QWidget):
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
+            was_dragging = self.dragging
             self.dragging = False
+            if was_dragging:
+                self._save_player_position()
             event.accept()
             return
         super().mouseReleaseEvent(event)
+
+    def _save_player_position(self):
+        """Persist the player's current position so it is restored after restart."""
+        settings = QSettings("MELO", "Explore")
+        settings.setValue("player_x", int(self.x()))
+        settings.setValue("player_y", int(self.y()))
+        settings.setValue("player_position_saved", True)
+        settings.sync()
+        self._saved_player_x = int(self.x())
+        self._saved_player_y = int(self.y())
+        self._has_saved_player_position = True
+
+    def closeEvent(self, event):
+        # Preserve the latest position even if Anki closes without another drag.
+        if getattr(self, "user_moved", False):
+            self._save_player_position()
+        super().closeEvent(event)
 
     # ---------------- Library ----------------
 
