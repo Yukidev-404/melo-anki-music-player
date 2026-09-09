@@ -60,7 +60,7 @@ MELO v1.0.2 adds improved library management, persistent player positioning, and
 ### MELO inside Anki
 
 <p align="center">
-  <img src="assets/screenshots/melo-in-anki.png" alt="MELO running inside Anki" width="1200">
+  <img src="assets/melo-in-anki.png" alt="MELO running inside Anki" width="1200">
 </p>
 
 ---
